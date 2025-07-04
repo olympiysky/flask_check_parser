@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Парсер чеков</title>
+</head>
+<body>
+    <h1>Загрузка чеков</h1>
+    <form method="post">
+        <textarea name="urls" rows="10" cols="80" placeholder="Вставьте ссылки на чеки, по одной в строке"></textarea><br>
+        <button type="submit">Анализировать</button>
+    </form>
+
+    {% if result %}
+    <h2>Результаты</h2>
+    <h3>Товары:</h3>
+    <ul>
+        {% for p in result.products %}
+        <li>[{{ p.category }}] {{ p.name }} — Саны: {{ p.qty }} → {{ p.total }}</li>
+        {% endfor %}
+    </ul>
+    <h3>📊 Статистика по категориям:</h3>
+    <ul>
+        {% for cat, total in result.stats.items() %}
+        <li>{{ cat }}: {{ "%.2f"|format(total) }} ₸</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</body>
+</html>
