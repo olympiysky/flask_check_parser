@@ -3,28 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <title>Парсер чеков</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        textarea { width: 100%; font-family: monospace; }
+        table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+        table, th, td { border: 1px solid #aaa; }
+        th, td { padding: 6px 10px; text-align: left; }
+        .error { color: red; font-weight: bold; }
+        hr { border: none; border-top: 1px dashed #999; margin: 20px 0; }
+    </style>
 </head>
 <body>
     <h1>Загрузка чеков</h1>
     <form method="post">
-        <textarea name="urls" rows="10" cols="80" placeholder="Вставьте ссылки на чеки, по одной в строке"></textarea><br>
+        <textarea name="urls" rows="10" placeholder="Вставьте ссылки на чеки, по одной в строке"></textarea><br>
         <button type="submit">Анализировать</button>
     </form>
 
+    {% if error %}
+        <div class="error">{{ error }}</div>
+    {% endif %}
+
     {% if result %}
-    <h2>Результаты</h2>
-    <h3>Товары:</h3>
-    <ul>
-        {% for p in result.products %}
-        <li>[{{ p.category }}] {{ p.name }} — Саны: {{ p.qty }} → {{ p.total }}</li>
+        <h3>Сводка по регионам/городам:</h3>
+        {% for region, data in result.grouped_by_region.items() %}
+            <h4>📍 {{ region }}</h4>
+            <p><strong>Количество товаров:</strong> {{ data.stats.count }}</p>
+            <p><strong>Общая сумма:</strong> {{ "%.2f"|format(data.stats.amount) }} ₸</p>
+            <ul>
+                {% for p in data.products %}
+                    <li>[{{ p.category }}] {{ p.name }} — Саны: {{ p.qty }} → {{ p.total }}</li>
+                {% endfor %}
+            </ul>
+            <hr>
         {% endfor %}
-    </ul>
-    <h3>📊 Статистика по категориям:</h3>
-    <ul>
-        {% for cat, total in result.stats.items() %}
-        <li>{{ cat }}: {{ "%.2f"|format(total) }} ₸</li>
-        {% endfor %}
-    </ul>
     {% endif %}
 </body>
 </html>
