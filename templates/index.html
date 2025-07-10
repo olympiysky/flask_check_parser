@@ -97,13 +97,14 @@
             <p>Всего чеков: {{ data.meta | length }} | Всего товаров: {{ data.stats.count }} | Общая сумма: {{ "%.2f"|format(data.stats.amount) }} ₸</p>
 
             <h4>Статистика по категориям:</h4>
+            {% set sorted_categories = data.category_stats.items()|sort(attribute='1.amount', reverse=true) %}
             <table>
                 <tr>
                     <th>Категория</th>
                     <th>Сумма</th>
                     <th>Количество</th>
                 </tr>
-                {% for cat, stat in data.category_stats.items() %}
+                {% for cat, stat in sorted_categories %}
                 <tr>
                     <td>{{ cat }}</td>
                     <td>{{ "%.2f"|format(stat.amount) }} ₸</td>
