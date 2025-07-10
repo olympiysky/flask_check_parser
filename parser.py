@@ -55,12 +55,12 @@ def parse_meta_info(soup):
 
 def parse_check(url):
     options = Options()
-    # options.add_argument('--headless=new')
+    options.add_argument('--headless=new')
     driver = webdriver.Chrome(options=options)
 
     try:
         driver.get(url)
-        time.sleep(10)
+        time.sleep(5)
         soup = BeautifulSoup(driver.page_source, "html.parser")
     finally:
         driver.quit()

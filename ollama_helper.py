@@ -11,7 +11,7 @@ def get_category_ollama(product_name: str) -> str:
             "model": "mistral",
             "prompt": prompt,
             "stream": False
-        }, timeout=30)
+        }, timeout=20)
 
         data = response.json()
         if "response" in data:
