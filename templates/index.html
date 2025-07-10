@@ -4,19 +4,69 @@
     <meta charset="UTF-8">
     <title>Парсер чеков</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
-        textarea { width: 100%; font-family: monospace; }
-        table { border-collapse: collapse; width: 100%; margin-top: 10px; }
-        table, th, td { border: 1px solid #aaa; }
-        th, td { padding: 6px 10px; text-align: left; }
-        .error { color: red; font-weight: bold; }
-        hr { border: none; border-top: 1px dashed #999; margin: 20px 0; }
+        body {
+            font-family: Tahoma, sans-serif;
+            font-size: 12px;
+            margin: 20px;
+            line-height: 1.4;
+        }
+        textarea {
+            width: 100%;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 5px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 3px 6px;
+            text-align: left;
+        }
+        h1, h2, h3, h4 {
+            margin: 10px 0 4px;
+            font-weight: normal;
+        }
+        ul {
+            margin: 4px 0 10px;
+            padding-left: 16px;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        hr {
+            border: none;
+            border-top: 1px dashed #aaa;
+            margin: 10px 0;
+        }
+        .toggle-btn {
+            cursor: pointer;
+            color: #0077cc;
+            text-decoration: underline;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+        .hidden {
+            display: none;
+        }
     </style>
+    <script>
+        function toggleList(id) {
+            const el = document.getElementById(id);
+            el.classList.toggle("hidden");
+        }
+    </script>
 </head>
 <body>
-    <h1>Загрузка чеков</h1>
+    <h1>Парсер чеков</h1>
     <form method="post">
-        <textarea name="urls" rows="10" placeholder="Вставьте ссылки на чеки, по одной в строке"></textarea><br>
+        <textarea name="urls" rows="6" placeholder="Вставьте ссылки на чеки, по одной в строке"></textarea><br>
         <button type="submit">Анализировать</button>
     </form>
 
@@ -25,14 +75,47 @@
     {% endif %}
 
     {% if result %}
-        <h3>Сводка по регионам/городам:</h3>
+        <h2>Общая статистика</h2>
+        <table>
+            <tr>
+                <th>Категория</th>
+                <th>Сумма</th>
+                <th>Количество</th>
+            </tr>
+            {% for cat, stat in result.stats.items() %}
+            <tr>
+                <td>{{ cat }}</td>
+                <td>{{ "%.2f"|format(stat.amount) }} ₸</td>
+                <td>{{ stat.count }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <h2>Сводка по регионам / городам</h2>
         {% for region, data in result.grouped_by_region.items() %}
-            <h4>📍 {{ region }}</h4>
-            <p><strong>Количество товаров:</strong> {{ data.stats.count }}</p>
-            <p><strong>Общая сумма:</strong> {{ "%.2f"|format(data.stats.amount) }} ₸</p>
-            <ul>
+            <h3>📍 {{ region }}</h3>
+            <p>Всего чеков: {{ data.meta | length }} | Всего товаров: {{ data.stats.count }} | Общая сумма: {{ "%.2f"|format(data.stats.amount) }} ₸</p>
+
+            <h4>Статистика по категориям:</h4>
+            <table>
+                <tr>
+                    <th>Категория</th>
+                    <th>Сумма</th>
+                    <th>Количество</th>
+                </tr>
+                {% for cat, stat in data.category_stats.items() %}
+                <tr>
+                    <td>{{ cat }}</td>
+                    <td>{{ "%.2f"|format(stat.amount) }} ₸</td>
+                    <td>{{ stat.count }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+
+            <div class="toggle-btn" onclick="toggleList('p_{{ loop.index }}')">Показать/скрыть товары</div>
+            <ul id="p_{{ loop.index }}" class="hidden">
                 {% for p in data.products %}
-                    <li>[{{ p.category }}] {{ p.name }} — Саны: {{ p.qty }} → {{ p.total }}</li>
+                <li>[{{ p.category }}] {{ p.name }} — {{ p.qty }} → {{ p.total }}</li>
                 {% endfor %}
             </ul>
             <hr>

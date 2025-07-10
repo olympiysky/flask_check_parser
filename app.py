@@ -12,12 +12,25 @@ def index():
         urls = request.form.get("urls", "").strip().splitlines()
 
         try:
-            stats, metas, grouped_by_region = parse_multiple_checks(urls)
+            (products_per_check, stats, metas,
+             grouped_by_region, category_stats_by_region,
+             all_products) = parse_multiple_checks(urls)
+
+            total_checks = sum(len(data["meta"]) for data in grouped_by_region.values())
+            total_products = sum(data["stats"]["count"] for data in grouped_by_region.values())
+            total_amount = sum(data["stats"]["amount"] for data in grouped_by_region.values())
+            
             result = {
+                "products": all_products,
                 "stats": stats,
                 "meta": metas,
-                "grouped_by_region": grouped_by_region
+                "grouped_by_region": grouped_by_region,
+                "category_stats_by_region": category_stats_by_region,
+                "total_checks": total_checks,
+                "total_products": total_products,
+                "total_amount": total_amount
             }
+
         except Exception as e:
             error = f"Произошла ошибка: {str(e)}"
 
