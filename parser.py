@@ -101,7 +101,7 @@ def parse_check(url):
     return {"products": result, "meta": meta}
 
 
-def parse_multiple_checks(urls):
+def parse_multiple_checks(urls, date_from=None, date_to=None):
     products_per_check = []
     all_products = []
     all_meta = []
@@ -152,5 +152,18 @@ def parse_multiple_checks(urls):
                 region_cat_stats[cat] = {"amount": 0.0, "count": 0}
             region_cat_stats[cat]["amount"] += amount
             region_cat_stats[cat]["count"] += int(qty)
+
+
+            date_str = meta.get("date")  # Пример: "31.05.2025 / 18:31"
+            try:
+                check_dt = datetime.strptime(date_str.split('/')[0].strip(), "%d.%m.%Y")
+            except Exception:
+                check_dt = None
+
+            if date_from and check_dt and check_dt < date_from:
+                continue
+            if date_to and check_dt and check_dt > date_to:
+                continue
+
 
     return products_per_check, stats, all_meta, grouped_by_region, total_by_category, all_products

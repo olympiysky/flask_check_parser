@@ -148,9 +148,12 @@
     </h1>
 
     <form method="post">
-        <textarea name="urls" rows="6" placeholder="Вставьте ссылки на чеки, по одной в строке"></textarea><br>
+        <textarea name="urls" rows="6" placeholder="Вставьте ссылки на чеки, по одной в строке"></textarea><br><br>
+        <label>Дата с: <input type="date" name="date_from"></label>
+        <label style="margin-left: 10px;">Дата по: <input type="date" name="date_to"></label><br><br>
         <button type="submit">Анализировать</button>
     </form>
+    
 
     {% if error %}
         <div class="error">{{ error }}</div>

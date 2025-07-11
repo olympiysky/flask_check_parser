@@ -10,16 +10,19 @@ def index():
 
     if request.method == "POST":
         urls = request.form.get("urls", "").strip().splitlines()
+        from datetime import datetime
+
+        date_from = request.form.get("date_from")
+        date_to = request.form.get("date_to")
+
+        # Преобразуем в datetime, если заданы
+        df = datetime.strptime(date_from, "%Y-%m-%d") if date_from else None
+        dt = datetime.strptime(date_to, "%Y-%m-%d") if date_to else None
 
         try:
-            (
-                products_per_check,
-                stats,
-                metas,
-                grouped_by_region,
-                category_stats_by_region,
-                all_products
-            ) = parse_multiple_checks(urls)
+            (products_per_check, stats, metas,
+         grouped_by_region, category_stats_by_region,
+         all_products) = parse_multiple_checks(urls, df, dt)
 
             # Общая статистика
             total_checks = len(metas)
