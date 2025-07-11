@@ -12,14 +12,20 @@ def index():
         urls = request.form.get("urls", "").strip().splitlines()
 
         try:
-            (products_per_check, stats, metas,
-             grouped_by_region, category_stats_by_region,
-             all_products) = parse_multiple_checks(urls)
+            (
+                products_per_check,
+                stats,
+                metas,
+                grouped_by_region,
+                category_stats_by_region,
+                all_products
+            ) = parse_multiple_checks(urls)
 
-            total_checks = sum(len(data["meta"]) for data in grouped_by_region.values())
-            total_products = sum(data["stats"]["count"] for data in grouped_by_region.values())
-            total_amount = sum(data["stats"]["amount"] for data in grouped_by_region.values())
-            
+            # Общая статистика
+            total_checks = len(metas)
+            total_products = sum(stat["count"] for stat in stats.values())
+            total_amount = sum(stat["amount"] for stat in stats.values())
+
             result = {
                 "products": all_products,
                 "stats": stats,

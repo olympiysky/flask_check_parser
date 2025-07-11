@@ -157,7 +157,12 @@
     {% endif %}
 
     {% if result %}
-        <h2>Общая статистика</h2>
+        <h3>Общая статистика</h3>
+        <p>
+            Всего чеков: {{ result.total_checks }} |
+            Всего товаров: {{ result.total_products }} |
+            Общая сумма: {{ "%.2f"|format(result.total_amount) }} ₸
+        </p>
         <table>
             <tr>
                 <th>Категория</th>
